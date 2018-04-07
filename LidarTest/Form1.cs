@@ -38,7 +38,7 @@ namespace LidarTest
         int bitloop;
         bool updateflag;
 
-        int maxangle = 0;
+        //int maxangle = 0;
         public Form1()
         {
             InitializeComponent();
@@ -56,6 +56,22 @@ namespace LidarTest
             updatedraw.Interval = 1;
             updatedraw.Tick += Updatedraw_Tick;
             updatedraw.Start();
+
+            this.MouseWheel += Form1_MouseWheel;
+        }
+
+        private void Form1_MouseWheel(object sender, MouseEventArgs e)
+        {
+            if (e.Delta > 0)
+            {
+                showdis += 300;
+            }
+            else
+            {
+                showdis -= 300;
+            }
+            if (showdis < 300) showdis = 300;
+            scal = 320 / 2 / showdis;
         }
 
         private void Updatedraw_Tick(object sender, EventArgs e)
@@ -67,11 +83,20 @@ namespace LidarTest
             }
         }
 
+        double showdis = 3000;
         double scal = 320.0/2/3000;
         int marksize=2;
         void drawmap()
         {
-            mapDraw.Clear(Color.White);
+            mapDraw.Clear(Color.DarkGreen);
+            mapDraw.DrawString("区域:" +showdis+ "mm", Font, Brushes.Gray, 0, 0);
+            for (int i = 1; i < 4; i++)
+            {
+                mapDraw.DrawEllipse(Pens.Gray, 160 - 50*i, 160 - 50*i, 100*i, 100*i);
+                mapDraw.DrawString("" + (showdis / 160 * 50 * i).ToString("f1")+"mm",Font,Brushes.Gray, 160,150 - 50*i);
+            }
+            mapDraw.DrawLine(Pens.Gray, 160, 0, 160, 320);
+            mapDraw.DrawLine(Pens.Gray, 0, 160, 320, 160);
             Brush bs= new SolidBrush(Color.FromArgb(0,0,0));
             double h = 0, v = 1 * Math.PI / 180;
             for (int i = 0; i < 360; i++)
